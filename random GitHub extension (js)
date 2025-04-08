@@ -1,0 +1,38 @@
+(function() {
+    // Function to check if the code is valid
+    function isCodeValid(code) {
+        try {
+            // Using eval to check if the code is valid JavaScript
+            eval(code);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // Function to highlight the invalid code
+    function highlightInvalidCode(codeElement) {
+        codeElement.style.borderColor = 'red';
+        codeElement.style.borderWidth = '2px';
+    }
+
+    // Function to clear the highlight
+    function clearHighlight(codeElement) {
+        codeElement.style.borderColor = '';
+        codeElement.style.borderWidth = '';
+    }
+
+    // Function to check the code and show alert if invalid
+    function checkCode() {
+        const codeElement = document.getElementById('code');
+        if (!isCodeValid(codeElement.value)) {
+            alert('Code is invalid');
+            highlightInvalidCode(codeElement);
+        } else {
+            clearHighlight(codeElement);
+        }
+    }
+
+    // Set an interval to check the code every 10 seconds
+    setInterval(checkCode, 10000);
+})();

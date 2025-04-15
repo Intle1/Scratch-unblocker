@@ -1,0 +1,18 @@
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class RedirectHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(302)  # HTTP status code for redirection
+        self.send_header('Location', 'https://newalgebra.com')  # Redirect to newalgebra.com
+        self.end_headers()
+
+# Define the server address and port
+host = '0.0.0.0'  # Bind to all network interfaces
+port = 8000       # Port for the temporary link (can be any available port)
+
+# Start the HTTP server
+if __name__ == "__main__":
+    with HTTPServer((host, port), RedirectHandler) as server:
+        print(f"Temporary link available at: http://localhost:{port}")
+        print("Use the Codespaces port forwarding feature to access it externally.")
+        server.serve_forever()

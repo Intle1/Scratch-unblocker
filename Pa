@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pac-Man Game</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: black;
+    }
+    .game-container {
+      display: grid;
+      grid-template-columns: repeat(10, 40px);
+      grid-template-rows: repeat(10, 40px);
+      gap: 2px;
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      box-sizing: border-box;
+    }
+    .wall {
+      background-color: blue;
+    }
+    .food {
+      background-color: black;
+      position: relative;
+    }
+    .food::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background-color: yellow;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .pacman {
+      background-color: yellow;
+      border-radius: 50%;
+    }
+    .ghost {
+      background-color: red;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const gameContainer = document.querySelector('.game-container');
+      const width = 10; // Width of the grid
+      const map = [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+        1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1,
+        1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 
+        1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      ];
+
+      let pacmanCurrentIndex = 11; // Starting position of Pac-Man
+      let ghostCurrentIndex = 18; // Starting position of Ghost
+
+      // Create the grid and populate it
+      function createGrid() {
+        for (let i = 0; i < map.length; i++) {
+          const cell = document.createElement('div');
+          cell.classList.add('cell');
+          if (map[i] === 1) {
+            cell.classList.add('wall');
+          } else if (map[i] === 0) {
+            cell.classList.add('food');
+          }
+          gameContainer.appendChild(cell);
+        }
+      }
+
+      createGrid();
+
+      const cells = Array.from(document.querySelectorAll('.cell'));
+      cells[pacmanCurrentIndex].classList.add('pacman');
+      cells[ghostCurrentIndex].classList.add('ghost');
+
+      // Move Pac-Man with arrow keys
+      document.addEventListener('keydown', (e) => {
+        cells[pacmanCurrentIndex].classList.remove('pacman');
+        switch (e.key) {
+          case 'ArrowUp':
+            if (pacmanCurrentIndex - width >= 0 && !cells[pacmanCurrentIndex - width].classList.contains('wall')) {
+              pacmanCurrentIndex -= width;
+            }
+            break;
+          case 'ArrowDown':
+            if (pacmanCurrentIndex + width < width * width && !cells[pacmanCurrentIndex + width].classList.contains('wall')) {
+              pacmanCurrentIndex += width;
+            }
+            break;
+          case 'ArrowLeft':
+            if (pacmanCurrentIndex % width !== 0 && !cells[pacmanCurrentIndex - 1].classList.contains('wall')) {
+              pacmanCurrentIndex -= 1;
+            }
+            break;
+          case 'ArrowRight':
+            if (pacmanCurrentIndex % width < width - 1 && !cells[pacmanCurrentIndex + 1].classList.contains('wall')) {
+              pacmanCurrentIndex += 1;
+            }
+            break;
+        }
+        cells[pacmanCurrentIndex].classList.add('pacman');
+      });
+
+      // Ghost movement (basic logic)
+      const directions = [-1, +1, -width, +width];
+      function moveGhost() {
+        const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+        if (
+          ghostCurrentIndex + randomDirection >= 0 &&
+          ghostCurrentIndex + randomDirection < width * width &&
+          !cells[ghostCurrentIndex + randomDirection].classList.contains('wall')
+        ) {
+          cells[ghostCurrentIndex].classList.remove('ghost');
+          ghostCurrentIndex += randomDirection;
+          cells[ghostCurrentIndex].classList.add('ghost');
+        }
+      }
+
+      setInterval(moveGhost, 500); // Move ghost every 500ms
+    });
+  </script>
+</body>
+</html>
